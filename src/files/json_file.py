@@ -27,29 +27,19 @@ class JSONVacancyFile(BaseFileVacancyWork):
         except (FileNotFoundError, json.JSONDecodeError):
             return []
 
-    # def add_vacancy(self, vacancy: List[Dict[str, Any]]) -> None:
-    #     """
-    #     Добавляет вакансию в JSON-файл, если она еще не существует.
-    #     """
-    #     vacancies = self._load_vacancies()
-    #     urls = {vacancy.get("url") for vacancy in vacancies}
-    #     new_vacancies = [vacancy for vacancy in vacancies if vacancy.get("url") not in urls]
-    #     with open(self.__filename, "w", encoding="utf-8") as file:
-    #         json.dump(new_vacancies, file, ensure_ascii=False, indent=2)
 
     def add_vacancy(self, vacancies: Union[Dict[str, Any], List[Dict[str, Any]]]) -> None:
         """
         Добавляет вакансию в JSON-файл, если она еще не существует.
         """
-        # Normalize input to a list
         vacancy_list = [vacancies] if isinstance(vacancies, dict) else vacancies
         existing_vacancies = self._load_vacancies()
-        existing_urls = {v["url"] for v in existing_vacancies if isinstance(v, dict) and "url" in v}
-        # Filter out duplicates based on URL
-        new_vacancies = [v for v in vacancy_list if isinstance(v, dict) and v.get("url") not in existing_urls]
-        # Overwrite with the new list of vacancies
-        with open(self.__filename, "w", encoding="utf-8") as f:
-            json.dump(new_vacancies, f, ensure_ascii=False, indent=2)
+        urls = {vacancy.get("url") for vacancy in existing_vacancies if
+                isinstance(vacancy, dict) and "url" in vacancy}
+        new_vacancies = [vacancy for vacancy in vacancy_list if
+                         isinstance(vacancy, dict) and vacancy.get("url") not in urls]
+        with open(self.__filename, "w", encoding="utf-8") as file:
+            json.dump(new_vacancies, file, ensure_ascii=False, indent=2)
 
 
     def get_vacancies(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
