@@ -30,6 +30,7 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
                 print("Не найдены вакансии или произошла ошибка.")
                 continue
 
+            vacancy_list = []
             for index in vacancies:
                 try:
                     vacancy = Vacancy(
@@ -38,10 +39,16 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
                         salary=index.get("salary"),
                         description=index.get("snippet", {}).get("requirement", "Not specified")
                     )
-                    files[file_type].add_vacancy(vacancy.to_dict())
+                    vacancy_list.append(vacancy.to_dict())
                     print(f"Добавлены вакансии: {vacancy.title}")
                 except ValueError as error:
                     print(f"Пропуск недействительных вакансий: {str(error)}")
+
+            if vacancy_list:
+                files[file_type].add_vacancy(vacancy_list)
+                print(f"Добавлено {len(vacancy_list)} вакансий в {file_type} файл.")
+            else:
+                print("Нет вакансий для обработки.")
 
         elif choice == "2":
             file_type = input("Выберите формат файла для обработки (json/csv/txt): ").lower()
@@ -54,6 +61,8 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
                 sorted_vacancies = sorted(vacancies, key=lambda element: element.get("salary"), reverse=True)[:number]
 
                 for vacancy in sorted_vacancies:
+                    if not isinstance(vacancy, dict):
+                        continue
                     salary = vacancy.get("salary") if vacancy.get("salary") > 0 else "Нет данных"
                     print(f"\nНазвание: {vacancy.get('title')}")
                     print(f"URL: {vacancy.get('url')}")
@@ -71,6 +80,10 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
             keyword = input("Введите слово для поиска в вакансиях: ")
             vacancies = files[file_type].get_vacancies({"keyword" : keyword})
 
+            if not vacancies:
+                print("Вакансий для отбора не найдено.")
+                continue
+
             for vacancy in vacancies:
                 salary = vacancy.get("salary") if vacancy.get("salary") > 0 else "Нет данных"
                 print(f"\nНазвание: {vacancy.get('title')}")
@@ -86,7 +99,7 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
 
             url = input("Введите URL вакансии для удаления: ")
             files[file_type].delete_vacancy(url)
-            print(f"Вакансии по ссылке URL удалены из {file_type} файла.")
+            print(f"Вакансии по ссылке {url} удалены из {file_type} файла.")
 
         elif choice == "0":
             print("\nВыход из программы.")

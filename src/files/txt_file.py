@@ -1,5 +1,5 @@
 from src.files.base_file import BaseFileVacancyWork
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 import os
 
 
@@ -39,13 +39,18 @@ class TXTVacancyFile(BaseFileVacancyWork):
         except FileNotFoundError:
             return []
 
-    def add_vacancy(self, vacancy: Dict[str, Any]) -> None:
+    def add_vacancy(self, vacancies: Union[Dict[str, Any], List[Dict[str, Any]]]) -> None:
         """
         Добавляет вакансию в TXT-файл, если она еще не существует.
         """
-        vacancies = self._load_vacancies()
-        if not any(vacancy_in_selection["url"] == vacancy["url"] for vacancy_in_selection in vacancies):
-            with open(self.__filename, "a", encoding="utf-8") as file:
+        vacancy_list = [vacancies] if isinstance(vacancies, dict) else vacancies
+        existing_vacancies = self._load_vacancies()
+        urls = {vacancy.get("url") for vacancy in existing_vacancies if
+                isinstance(vacancy, dict) and "url" in vacancy}
+        new_vacancies = [vacancy for vacancy in vacancy_list if
+                         isinstance(vacancy, dict) and vacancy.get("url") not in urls]
+        with open(self.__filename, "w", encoding="utf-8") as file:
+            for vacancy in new_vacancies:
                 file.write(f"{vacancy['title']}|{vacancy['url']}|{vacancy['salary']}|{vacancy['description']}\n")
 
     def get_vacancies(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
