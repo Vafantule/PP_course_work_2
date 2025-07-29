@@ -46,7 +46,7 @@ def test_main_user_interaction(
         assert args[1]["txt"] is mock_txt_file
 
 
-def test_main_entrypoint(monkeypatch):
+def test_main_entrypoint(monkeypatch: MonkeyPatch) -> None:
     import main
     monkeypatch.setattr(main, "__name__", "__main__")
     with patch("main.main") as mock_main:
