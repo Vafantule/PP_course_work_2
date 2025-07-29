@@ -1,11 +1,12 @@
 import os
 import tempfile
-import pytest
-from typing import Any, Dict, List, Generator
+from typing import Any, Dict, Generator, List
 from unittest.mock import patch
 
-from src.files.json_file import JSONVacancyFile
+import pytest
+
 from src.files.csv_file import CSVVacancyFile
+from src.files.json_file import JSONVacancyFile
 from src.files.txt_file import TXTVacancyFile
 
 
@@ -68,7 +69,8 @@ def txt_connector(temp_txt_file: str) -> TXTVacancyFile:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_add_vacancy(connector_name, request, vacancy_data) -> None:
+def test_add_vacancy(connector_name: str, request: pytest.FixtureRequest,
+                     vacancy_data: List[Dict[str, Any]]) -> None:
     connector = request.getfixturevalue(connector_name)
     connector.add_vacancy(vacancy_data)
     result = connector.get_vacancies({})
@@ -82,7 +84,8 @@ def test_add_vacancy(connector_name, request, vacancy_data) -> None:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_get_vacancy_by_keyword(connector_name, request, vacancy_data) -> None:
+def test_get_vacancy_by_keyword(connector_name: str, request: pytest.FixtureRequest,
+                                vacancy_data: List[Dict[str, Any]]) -> None:
     connector = request.getfixturevalue(connector_name)
     connector.add_vacancy(vacancy_data)
     result = connector.get_vacancies({"keyword": "Написатель"})
@@ -95,7 +98,8 @@ def test_get_vacancy_by_keyword(connector_name, request, vacancy_data) -> None:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_delete_vacancy(connector_name, request, vacancy_data) -> None:
+def test_delete_vacancy(connector_name: str, request: pytest.FixtureRequest,
+                        vacancy_data: List[Dict[str, Any]]) -> None:
     connector = request.getfixturevalue(connector_name)
     connector.add_vacancy(vacancy_data)
     connector.delete_vacancy("http://plumber.com")
@@ -109,7 +113,8 @@ def test_delete_vacancy(connector_name, request, vacancy_data) -> None:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_no_duplicate_vacancy(connector_name, request, vacancy_data) -> None:
+def test_no_duplicate_vacancy(connector_name: str, request: pytest.FixtureRequest,
+                              vacancy_data: List[Dict[str, Any]]) -> None:
     connector = request.getfixturevalue(connector_name)
     connector.add_vacancy(vacancy_data)
     connector.add_vacancy(vacancy_data[0])
@@ -122,7 +127,8 @@ def test_no_duplicate_vacancy(connector_name, request, vacancy_data) -> None:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_add_vacancy_patch(connector_name, request, vacancy_data) -> None:
+def test_add_vacancy_patch(connector_name: str, request: pytest.FixtureRequest,
+                           vacancy_data: List[Dict[str, Any]]) -> None:
     connector = request.getfixturevalue(connector_name)
     with patch.object(connector, "add_vacancy", return_value=None) as mock_add:
         connector.add_vacancy(vacancy_data)
@@ -134,7 +140,7 @@ def test_add_vacancy_patch(connector_name, request, vacancy_data) -> None:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_get_vacancy_patch(connector_name, request) -> None:
+def test_get_vacancy_patch(connector_name: str, request: pytest.FixtureRequest) -> None:
     connector = request.getfixturevalue(connector_name)
     with patch.object(connector, "get_vacancies", return_value=[{"title": "Mock"}]) as mock_get:
         result = connector.get_vacancies({"keyword": 'any'})
@@ -147,7 +153,7 @@ def test_get_vacancy_patch(connector_name, request) -> None:
     "csv_connector" ,
     "txt_connector" ,
 ])
-def test_delete_vacancy_patch(connector_name, request) -> None:
+def test_delete_vacancy_patch(connector_name: str, request: pytest.FixtureRequest) -> None:
     connector = request.getfixturevalue(connector_name)
     with patch.object(connector, "delete_vacancy", return_value=None) as mock_delete:
         connector.delete_vacancy("http://any.com")
