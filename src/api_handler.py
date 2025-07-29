@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import Any, Dict, List
+
 import requests
-from typing import List, Dict, Any
 
 
 class BaseVacancyAPI(ABC):
@@ -27,7 +28,6 @@ class HeadHunterAPI(BaseVacancyAPI):
     """
     Класс для работы с API hh.ru.
     """
-
     def __init__(self) -> None:
         """
         Инициализирует HeadHunterAPI с базовым URL и заголовками.
@@ -53,13 +53,20 @@ class HeadHunterAPI(BaseVacancyAPI):
         """
         params = {
             "text": keyword,
-            "area": 113,
-            "per_page": 50
+            "area": "113",
+            "per_page": "50"
         }
         try:
             response = requests.get(self.__base_url, headers=self.__headers, params=params, timeout=10)
             response.raise_for_status()
-            return response.json().get("items", [])
+            data = response.json()
+            if not isinstance(data, dict) or "items" not in data:
+                return []
+            items = data.get("items")
+            if not isinstance(items, list):
+                return []
+            validated_items = [item for item in items if isinstance(item, dict)]
+            return validated_items
         except requests.RequestException as error:
-            print(f"Error fetching vacancies: {str(error)}")
+            print(f"Ошибка при получении вакансий: {str(error)}")
             return []

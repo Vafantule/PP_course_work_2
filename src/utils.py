@@ -17,7 +17,7 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
         print("4. Удалить вакансию по URL")
         print("0. Выйти")
 
-        choice = input("Выберите действие (1-5): ")
+        choice = input("Выберите действие (0-4): ")
         if choice == "1":
             keyword = input("Введите запрос по слову: ")
             file_type = input("Выберите формат файла для обработки (json/csv/txt): ").lower()
@@ -31,13 +31,13 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
                 continue
 
             vacancy_list = []
-            for index in vacancies:
+            for i, element in enumerate(vacancies, 1):
                 try:
                     vacancy = Vacancy(
-                        title=index.get("name", ""),
-                        url=index.get("alternate_url", ""),
-                        salary=index.get("salary"),
-                        description=index.get("snippet", {}).get("requirement", "Not specified")
+                        title=element.get("name", ""),
+                        url=element.get("alternate_url", ""),
+                        salary=element.get("salary"),
+                        description=element.get("snippet", {}).get("requirement", "Not specified")
                     )
                     vacancy_list.append(vacancy.to_dict())
                     print(f"Добавлены вакансии: {vacancy.title}")
@@ -58,16 +58,19 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
             try:
                 number = int(input("Введите число вакансий для вывода: "))
                 vacancies = files[file_type].get_vacancies({})
-                sorted_vacancies = sorted(vacancies, key=lambda element: element.get("salary"), reverse=True)[:number]
+                sorted_vacancies = sorted(
+                    vacancies,
+                    key=lambda element: element.get("salary", 0),
+                    reverse=True)[:number]
 
-                for vacancy in sorted_vacancies:
-                    if not isinstance(vacancy, dict):
+                for another_vacancy in sorted_vacancies:
+                    if not isinstance(another_vacancy, dict):
                         continue
-                    salary = vacancy.get("salary") if vacancy.get("salary") > 0 else "Нет данных"
-                    print(f"\nНазвание: {vacancy.get('title')}")
-                    print(f"URL: {vacancy.get('url')}")
+                    salary = another_vacancy.get("salary", 0) if another_vacancy.get("salary", 0) > 0 else "Нет данных"
+                    print(f"\nНазвание: {another_vacancy.get('title')}")
+                    print(f"URL: {another_vacancy.get('url')}")
                     print(f"Зарплата: {salary}")
-                    print(f"Описание: {vacancy.get('description')}")
+                    print(f"Описание: {another_vacancy.get('description')}")
             except ValueError:
                 print("Введите верное число вакансий для отбора.")
 
@@ -84,12 +87,14 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
                 print("Вакансий для отбора не найдено.")
                 continue
 
-            for vacancy in vacancies:
-                salary = vacancy.get("salary") if vacancy.get("salary") > 0 else "Нет данных"
-                print(f"\nНазвание: {vacancy.get('title')}")
-                print(f"URL: {vacancy.get('url')}")
+            for another_vacancy in vacancies:
+                if not isinstance(another_vacancy, dict):
+                    continue
+                salary = another_vacancy.get("salary", 0) if another_vacancy.get("salary", 0) > 0 else "Нет данных"
+                print(f"\nНазвание: {another_vacancy.get('title')}")
+                print(f"URL: {another_vacancy.get('url')}")
                 print(f"Зарплата: {salary}")
-                print(f"Описание: {vacancy.get('description')}")
+                print(f"Описание: {another_vacancy.get('description')}")
 
         elif choice == "4":
             file_type = input("Выберите формат файла для обработки (json/csv/txt): ").lower()
@@ -106,4 +111,4 @@ def user_interaction(api: HeadHunterAPI, files: Dict[str, BaseFileVacancyWork]) 
             break
 
         else:
-            print("\nВыбор не корректный. Выберите из 1-5.")
+            print("\nВыбор не корректный. Выберите из 0-4.")

@@ -1,7 +1,8 @@
-from src.files.base_file import BaseFileVacancyWork
-from typing import List, Dict, Any, Union
-import os
 import csv
+import os
+from typing import Any, Dict, List, Union
+
+from src.files.base_file import BaseFileVacancyWork
 
 
 class CSVVacancyFile(BaseFileVacancyWork):

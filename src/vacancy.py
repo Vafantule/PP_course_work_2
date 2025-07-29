@@ -1,11 +1,10 @@
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 class Vacancy:
     """
     Класс вакансии. __slots__ для экономии памяти.
     """
-
     __slots__ = ("_title", "_url", "_salary", "_description")
 
     def __init__(self, title: str, url: str, salary: Optional[Dict[str, Any]], description: Optional[str]) -> None:
@@ -39,7 +38,13 @@ class Vacancy:
         """
         if not salary or not isinstance(salary, dict):
             return 0
-        return salary.get("from", 0) or salary.get("to", 0)
+        salary_from = salary.get("from")
+        salary_to = salary.get("to")
+        if isinstance(salary_from, (int, float)):
+            return int(salary_from)
+        if isinstance(salary_to, (int, float)):
+            return int(salary_to)
+        return 0
 
     def _validate_description(self, description: Optional[str]) -> str:
         """
@@ -83,7 +88,7 @@ class Vacancy:
             return NotImplemented
         return self._salary < other._salary
 
-    def __eq__(self, other: "Vacancy") -> bool:
+    def __eq__(self, other: object) -> bool:
         """
         Сравнивает вакансии на предмет равенства по названию и URL.
         """
