@@ -1,6 +1,8 @@
-import pytest
-from src.vacancy import Vacancy
 from typing import Any, Dict, Optional
+
+import pytest
+
+from src.vacancy import Vacancy
 
 
 @pytest.fixture
@@ -19,7 +21,7 @@ def vacancy_data(valid_salary: Dict[str, Any]) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def vacancy(vacancy_data:Dict[str, Any]) -> Vacancy:
+def vacancy(vacancy_data: Dict[str, Any]) -> Vacancy:
     return Vacancy(
         title=vacancy_data.get("title", ""),
         url=vacancy_data.get("url", ""),
@@ -34,7 +36,11 @@ def vacancy(vacancy_data:Dict[str, Any]) -> Vacancy:
     ("Столяр", "http://carpenter.ua", None, "Обработка", 0),
     ("Инженер", "http://engineer.us", {}, "Обслуживание", 0),
 ])
-def test_salary_parsing(title: str, url: str, salary: Optional[Dict[str, Any]], description: str, expected: int) -> None:
+def test_salary_parsing(
+        title: str,
+        url: str,
+        salary: Optional[Dict[str, Any]],
+        description: str, expected: int) -> None:
     vacancy = Vacancy(title, url, salary, description)
     assert vacancy.salary == expected
 
@@ -66,7 +72,7 @@ def test_description_validation(description: Optional[str], expected: str) -> No
 def test_properties(vacancy: Vacancy, vacancy_data: Dict[str, Any]) -> None:
     assert vacancy.title == vacancy_data.get("title", "")
     assert vacancy.url == vacancy_data.get("url", "")
-    assert vacancy.salary == vacancy_data.get("salary").get("from", 0)
+    assert vacancy.salary == vacancy_data["salary"]["from"]
     assert vacancy.description == vacancy_data.get("description", "")
 
 
@@ -75,7 +81,7 @@ def test_to_dict(vacancy: Vacancy, vacancy_data: Dict[str, Any]) -> None:
     assert isinstance(dict_for_test, dict)
     assert dict_for_test.get("title", "") == vacancy_data.get("title", "")
     assert dict_for_test.get("url", "") == vacancy_data.get("url", "")
-    assert dict_for_test.get("salary", "") == vacancy_data.get("salary").get("from", 0)
+    assert dict_for_test.get("salary", "") == vacancy_data["salary"]["from"]
     assert dict_for_test.get("description", "") == vacancy_data.get("description", "")
 
 
