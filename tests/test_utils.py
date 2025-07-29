@@ -1,7 +1,7 @@
+from typing import Any, Dict
 from unittest.mock import Mock, patch
 
 import pytest
-from typing import Any, Dict
 
 from src.utils import user_interaction
 
@@ -74,30 +74,30 @@ def test_user_interaction_flow(
         if expected.get("api"):
             assert mock_api.get_vacancies.call_count == expected.get("api")
         if expected.get("add_vacancy"):
-            assert files.get("json").add_vacancy.call_count == expected.get("add_vacancy")
-        if expected.get("get_vacancy"):
-            assert files.get("json").get_vacancy.call_count == expected.get("get_vacancy")
+            assert files["json"].add_vacancy.call_count == expected.get("add_vacancy")
+        if expected.get("get_vacancies"):
+            assert files["json"].get_vacancies.call_count == expected.get("get_vacancies")
         if expected.get("delete_vacancy"):
-            assert files.get("json").delete_vacancy.call_count == expected.get("delete_vacancy")
+            assert files["json"].delete_vacancy.call_count == expected.get("delete_vacancy")
         assert mock_print.call_args_list[-1][0][0].startswith("\nВыход из программы.")
 
 
 def test_invalid_file_type(mock_api: Mock, files: Dict[str, Any]) -> None:
-    with patch("builtins.input", side_effect=["1", "Python", "xml", "0"]), \
-        patch("builtins.print") as mock_print:
+    with (patch("builtins.input", side_effect=["1", "Python", "xml", "0"]),
+          patch("builtins.print") as mock_print):
         user_interaction(mock_api, files)
         assert any("Недопустимый формат файла" in call[0][0] for call in mock_print.call_args_list)
 
 
 def test_invalid_choice(mock_api: Mock, files: Dict[str, Any]) -> None:
-    with patch("builtins.input", side_effect=["9", "0"]), \
-        patch("builtins.print") as mock_print:
+    with (patch("builtins.input", side_effect=["9", "0"]),
+          patch("builtins.print") as mock_print):
         user_interaction(mock_api, files)
         assert any("Выбор не корректный" in call[0][0] for call in mock_print.call_args_list)
 
 
 def test_invalid_number_top_vacancies(mock_api: Mock, files: Dict[str, Any]) -> None:
-    with patch("builtins.input", side_effect=["2", "json", "not_a_number", "0"]), \
-        patch("builtins.print") as mock_print:
+    with (patch("builtins.input", side_effect=["2", "json", "not_a_number", "0"]),
+          patch("builtins.print") as mock_print):
         user_interaction(mock_api, files)
         assert any("Введите верное число вакансий" in call[0][0] for call in mock_print.call_args_list)
