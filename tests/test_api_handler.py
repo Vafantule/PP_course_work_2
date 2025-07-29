@@ -1,5 +1,5 @@
-from typing import List, Dict, Any
-from unittest.mock import patch, Mock
+from typing import Any, Dict, List
+from unittest.mock import Mock, patch
 
 import pytest
 import requests
@@ -15,9 +15,9 @@ class FakeVacancyAPI(BaseVacancyAPI):
         return [
             {
                 "title": "Трубочист",
-                 "url": "http://example.com",
-                 "salary": 13,
-                 "description": "Прочистка труб"
+                "url": "http://example.com",
+                "salary": 13,
+                "description": "Прочистка труб"
             }
         ]
 
