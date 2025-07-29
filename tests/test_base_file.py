@@ -1,8 +1,7 @@
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import patch, Mock
-
 from _pytest.monkeypatch import MonkeyPatch
 
 from src.files.base_file import BaseFileVacancyWork
@@ -53,7 +52,7 @@ def test_get_vacancy(fake_connector: FakeFileVacancyWork) -> None:
     "",
     None
 ])
-def test_delete_vacancy(fake_connector: FakeFileVacancyWork, url) -> None:
+def test_delete_vacancy(fake_connector: FakeFileVacancyWork, url: str) -> None:
     fake_connector.delete_vacancy(url)
     assert hasattr(fake_connector, "_delete")
     assert fake_connector._delete == url
