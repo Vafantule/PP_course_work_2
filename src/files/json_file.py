@@ -1,7 +1,8 @@
-from src.files.base_file import BaseFileVacancyWork
-from typing import List, Dict, Any, Union
 import json
 import os
+from typing import Any, Dict, List, Union
+
+from src.files.base_file import BaseFileVacancyWork
 
 
 class JSONVacancyFile(BaseFileVacancyWork):
@@ -23,10 +24,13 @@ class JSONVacancyFile(BaseFileVacancyWork):
         """
         try:
             with open(self.__filename, "r", encoding="utf-8") as file:
-                return json.load(file)
+                data = json.load(file)
+                if not isinstance(data, list):
+                    return []
+                validated_data = [item for item in data if isinstance(item, dict)]
+                return validated_data
         except (FileNotFoundError, json.JSONDecodeError):
             return []
-
 
     def add_vacancy(self, vacancies: Union[Dict[str, Any], List[Dict[str, Any]]]) -> None:
         """
@@ -40,7 +44,6 @@ class JSONVacancyFile(BaseFileVacancyWork):
                          isinstance(vacancy, dict) and vacancy.get("url") not in urls]
         with open(self.__filename, "w", encoding="utf-8") as file:
             json.dump(new_vacancies, file, ensure_ascii=False, indent=2)
-
 
     def get_vacancies(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
         """

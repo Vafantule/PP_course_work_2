@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
 
 class BaseFileVacancyWork(ABC):
@@ -8,7 +8,7 @@ class BaseFileVacancyWork(ABC):
     """
 
     @abstractmethod
-    def add_vacancy(self, vacancy: Dict[str, Any]) -> None:
+    def add_vacancy(self, vacancy: List[Dict[str, Any]]) -> None:
         """
         Добавляет вакансию в хранилище.
         """
