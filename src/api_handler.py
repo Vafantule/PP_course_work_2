@@ -51,6 +51,7 @@ class HeadHunterAPI(BaseVacancyAPI):
         """
         Находит вакансии с HH.ru по ключевому слову.
         """
+        self._connect()
         params = {
             "text": keyword,
             "area": "113",

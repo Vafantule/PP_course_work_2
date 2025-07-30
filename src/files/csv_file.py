@@ -44,10 +44,11 @@ class CSVVacancyFile(BaseFileVacancyWork):
                 isinstance(vacancy, dict) and "url" in vacancy}
         new_vacancies = [vacancy for vacancy in vacancy_list if
                          isinstance(vacancy, dict) and vacancy.get("url") not in urls]
+        all_vacancies = existing_vacancies + new_vacancies
         with open(self.__filename, "w", encoding="utf-8", newline="") as file:
             writer = csv.DictWriter(file, fieldnames=["title", "url", "salary", "description"])
             writer.writeheader()
-            writer.writerows(new_vacancies)
+            writer.writerows(all_vacancies)
 
     def get_vacancies(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
         """

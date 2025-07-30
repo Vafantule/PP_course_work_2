@@ -42,8 +42,9 @@ class JSONVacancyFile(BaseFileVacancyWork):
                 isinstance(vacancy, dict) and "url" in vacancy}
         new_vacancies = [vacancy for vacancy in vacancy_list if
                          isinstance(vacancy, dict) and vacancy.get("url") not in urls]
+        all_vacancies = existing_vacancies + new_vacancies
         with open(self.__filename, "w", encoding="utf-8") as file:
-            json.dump(new_vacancies, file, ensure_ascii=False, indent=2)
+            json.dump(all_vacancies, file, ensure_ascii=False, indent=2)
 
     def get_vacancies(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
         """

@@ -82,11 +82,19 @@ class Vacancy:
 
     def __lt__(self, other: "Vacancy") -> bool:
         """
-        Сравнивает вакансии по зарплате.
+        Сравнивает вакансии по зарплате, если меньше.
         """
         if not isinstance(other, Vacancy):
             return NotImplemented
         return self._salary < other._salary
+
+    def __gt__(self, other: "Vacancy") -> bool:
+        """
+        Сравнивает вакансии по зарплате, если больше.
+        """
+        if not isinstance(other, Vacancy):
+            return NotImplemented
+        return self._salary > other._salary
 
     def __eq__(self, other: object) -> bool:
         """

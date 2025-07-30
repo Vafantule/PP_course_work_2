@@ -50,8 +50,9 @@ class TXTVacancyFile(BaseFileVacancyWork):
                 isinstance(vacancy, dict) and "url" in vacancy}
         new_vacancies = [vacancy for vacancy in vacancy_list if
                          isinstance(vacancy, dict) and vacancy.get("url") not in urls]
+        all_vacancies = existing_vacancies + new_vacancies
         with open(self.__filename, "w", encoding="utf-8") as file:
-            for vacancy in new_vacancies:
+            for vacancy in all_vacancies:
                 file.write(f"{vacancy['title']}|{vacancy['url']}|{vacancy['salary']}|{vacancy['description']}\n")
 
     def get_vacancies(self, criteria: Dict[str, Any]) -> List[Dict[str, Any]]:
